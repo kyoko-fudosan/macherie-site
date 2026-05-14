@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>make-up&facial salon ma-cherie 予約サイト</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Hiragino Kaku Gothic Pro', 'Yu Gothic', sans-serif; color: #333; background: #fdf6f8; }
+  header { background: linear-gradient(135deg, #c06a8a, #e8a0b8); color: white; padding: 20px 0; text-align: center; }
+  header h1 { font-size: 2em; letter-spacing: 2px; margin-bottom: 4px; }
+  header p { font-size: 0.95em; opacity: 0.9; }
+  nav { background: #b05070; display: flex; justify-content: center; flex-wrap: wrap; gap: 2px; padding: 8px; }
+  nav a { color: white; text-decoration: none; padding: 8px 16px; border-radius: 4px; font-size: 0.9em; transition: background 0.2s; }
+  nav a:hover { background: rgba(255,255,255,0.2); }
+  .hero { background: linear-gradient(to bottom, #f8dde8, #fdf6f8); text-align: center; padding: 50px 20px; }
+  .hero h2 { font-size: 1.8em; color: #c06a8a; margin-bottom: 12px; }
+  .hero p { color: #666; line-height: 1.8; max-width: 600px; margin: 0 auto 24px; }
+  .btn { display: inline-block; background: #c06a8a; color: white; padding: 14px 36px; border-radius: 30px; text-decoration: none; font-size: 1.05em; font-weight: bold; transition: background 0.2s, transform 0.1s; }
+  .btn:hover { background: #a05070; transform: translateY(-2px); }
+  .rating { color: #ffb347; font-size: 1.3em; }
+  .rating span { color: #555; font-size: 0.8em; }
+  section { padding: 50px 20px; max-width: 900px; margin: 0 auto; }
+  h2.section-title { font-size: 1.5em; color: #c06a8a; border-left: 4px solid #c06a8a; padding-left: 12px; margin-bottom: 28px; }
+  .info-table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .info-table th { background: #f5c6d8; color: #7a2848; padding: 13px 16px; width: 140px; text-align: left; font-size: 0.9em; }
+  .info-table td { padding: 13px 16px; border-bottom: 1px solid #f0e0e8; font-size: 0.92em; line-height: 1.7; }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+  .menu-card { background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); padding: 22px; border-top: 4px solid #c06a8a; }
+  .menu-card .tag { display: inline-block; background: #f5c6d8; color: #7a2848; font-size: 0.75em; padding: 3px 8px; border-radius: 20px; margin-bottom: 8px; }
+  .menu-card h3 { font-size: 0.97em; color: #333; margin-bottom: 8px; line-height: 1.5; }
+  .menu-card .price { font-size: 1.4em; color: #c06a8a; font-weight: bold; }
+  .menu-card .condition { font-size: 0.78em; color: #888; margin-top: 6px; }
+  .menu-card .btn-sm { display: inline-block; margin-top: 14px; background: #c06a8a; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-size: 0.85em; font-weight: bold; transition: background 0.2s; }
+  .menu-card .btn-sm:hover { background: #a05070; }
+  .review-card { background: white; border-radius: 12px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 16px; }
+  .review-card .reviewer { font-weight: bold; color: #555; margin-bottom: 4px; }
+  .review-card .date { font-size: 0.8em; color: #aaa; margin-bottom: 10px; }
+  .review-card p { font-size: 0.92em; line-height: 1.7; color: #444; }
+  .form-section { background: white; border-radius: 16px; padding: 36px; box-shadow: 0 4px 16px rgba(192,106,138,0.1); }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-weight: bold; color: #7a2848; margin-bottom: 7px; font-size: 0.93em; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 14px; border: 1.5px solid #e0b0c8; border-radius: 8px; font-size: 0.95em; color: #333; transition: border 0.2s; font-family: inherit; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #c06a8a; }
+  .form-group textarea { height: 120px; resize: vertical; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .submit-btn { width: 100%; background: linear-gradient(135deg, #c06a8a, #e8a0b8); color: white; border: none; padding: 16px; border-radius: 30px; font-size: 1.1em; font-weight: bold; cursor: pointer; letter-spacing: 1px; transition: opacity 0.2s, transform 0.1s; }
+  .submit-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+  .tags-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+  .tag-label { background: #f5c6d8; color: #7a2848; padding: 5px 14px; border-radius: 20px; font-size: 0.85em; }
+  .staff-card { background: white; border-radius: 12px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; align-items: flex-start; gap: 18px; }
+  .staff-icon { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #f5c6d8, #c06a8a); display: flex; align-items: center; justify-content: center; font-size: 1.8em; flex-shrink: 0; }
+  .staff-card h3 { font-size: 1.05em; color: #333; margin-bottom: 4px; }
+  .staff-card .role { font-size: 0.82em; color: #c06a8a; margin-bottom: 8px; }
+  .staff-card p { font-size: 0.88em; color: #666; line-height: 1.7; }
+  footer { background: #7a2848; color: #f0c8d8; text-align: center; padding: 30px 20px; font-size: 0.87em; line-height: 1.8; margin-top: 40px; }
+  footer a { color: #f0c8d8; text-decoration: none; }
+  .success-msg { display: none; background: #d4edda; color: #155724; border-radius: 10px; padding: 18px; text-align: center; margin-top: 16px; font-weight: bold; }
+  @media(max-width:600px){
+    .form-row{grid-template-columns:1fr;}
+    header h1{font-size:1.4em;}
+    .menu-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>make-up &amp; facial salon<br>ma-cherie</h1>
+  <p>メイクアップアンドフェイシャルサロン　マ・シェリ</p>
+</header>
+<nav>
+  <a href="#about">サロンについて</a>
+  <a href="#menu">メニュー</a>
+  <a href="#staff">スタッフ</a>
+  <a href="#access">アクセス</a>
+  <a href="#review">口コミ</a>
+  <a href="#reserve">予約する</a>
+</nav>
+
+<div class="hero">
+  <div class="rating">★★★★★ <span>5.00（39件）</span></div>
+  <h2>お顔の駆け込み寺！</h2>
+  <p>韓国肌管理ララピール導入★美肌作りはお任せを！<br>眉毛、まつ毛で目元パッチリ◎<br>メイクアップアーティストとしてのキャリアを活かし、美肌づくりにこだわったお顔専門サロン。オープンして13年目♪</p>
+  <div class="tags-row" style="justify-content:center;">
+    <span class="tag-label">エステ</span>
+    <span class="tag-label">リラク</span>
+    <span class="tag-label">まつげ・メイク</span>
+    <span class="tag-label">スマート支払いOK</span>
+    <span class="tag-label">完全予約制</span>
+    <span class="tag-label">当日受付OK</span>
+  </div>
+  <a href="#reserve" class="btn">今すぐ予約する</a>
+</div>
+
+<section id="about">
+  <h2 class="section-title">サロン情報</h2>
+  <table class="info-table">
+    <tr><th>住所</th><td>大分県大分市下郡北３－２６－２１</td></tr>
+    <tr><th>アクセス</th><td>米良バイパス沿い、なしかラーメンと肉肉うどんの間（裏の小学校側の通りではない）<br>大分市街地からお越しの方は21号線を下郡方面に進み「加納西交差点」を米良バイパス方面に右折。500メートル程直進するとスターバックスや肉肉うどんの並びにあります。</td></tr>
+    <tr><th>営業時間</th><td>11:00〜18:00<br>※時間外はお電話【070-5815-1166】またはLINE公式【@797dronl】・Instagram【macherie2013】DMにてご相談ください。</td></tr>
+    <tr><th>定休日</th><td>火曜・日曜・祝日、その他不定休。予約の空き状況でご確認ください。</td></tr>
+    <tr><th>電話番号</th><td>070-5815-1166</td></tr>
+    <tr><th>駐車場</th><td>店前に2台あり</td></tr>
+    <tr><th>支払い方法</th><td>Visa / Mastercard / JCB / American Express / Diners Club / Discover<br>※5,000円以上のお支払いのみキャッシュレス利用可（5,000円以下は現金）</td></tr>
+    <tr><th>こだわり</th><td>当日受付OK／駐車場あり／完全予約制／指名予約OK／メイクルームあり／3席以下の小型サロン／都度払いメニューあり／体験メニューあり／ブライダルメニューあり／回数券あり／スクール併設</td></tr>
+    <tr><th>SNS</th><td>Instagram: macherie2013 ／ LINE公式: @797dronl</td></tr>
+  </table>
+</section>
+
+<section id="menu">
+  <h2 class="section-title">メニュー・クーポン</h2>
+  <div class="menu-grid">
+    <div class="menu-card">
+      <span class="tag">フェイシャル</span><span class="tag">ブライダル</span>
+      <h3>《ララピール》韓国で大人気！ツヤ肌水光肌を作る肌管理 ふっくらモチモチ肌へ</h3>
+      <div class="price">¥8,900</div>
+      <div class="condition">利用条件：すべての方／提示：予約時＆入店時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">フェイシャル</span><span class="tag">ブライダル</span>
+      <h3>毛穴ケア【クリアコース】毛穴の詰まりや開きを改善、肌荒れやニキビ肌にも◎</h3>
+      <div class="price">¥6,990</div>
+      <div class="condition">利用条件：どなたでも／提示：予約時＆入店時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">フェイシャル</span><span class="tag">ブライダル</span>
+      <h3>【最新肌質改善】マイクロニードル深層導入《ヒト幹細胞成分》&リフトアップ</h3>
+      <div class="price">¥9,900</div>
+      <div class="condition">利用条件：どなたでも／提示：予約時＆入店時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">フェイシャル</span>
+      <h3>【眉カット付】毛穴ケアコース☆毛穴の黒ずみ、詰まり、開きが気になる方</h3>
+      <div class="price">¥8,900</div>
+      <div class="condition">利用条件：どなたでも／提示：予約時＆入店時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">フェイシャル</span><span class="tag">ブライダル</span>
+      <h3>【顔脱毛】でトーンアップ&ツヤアップした毛穴レスなお肌へ♪</h3>
+      <div class="price">¥6,300</div>
+      <div class="condition">利用条件：年齢問わず女性のみ／提示：予約時＆入店時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">フェイシャル</span><span class="tag">ブライダル</span>
+      <h3>【眉カット付】お顔のシェービング&クレンジングマッサージコース</h3>
+      <div class="price">¥5,500</div>
+      <div class="condition">利用条件：女性のみ／提示：予約時＆入店時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">まつげ</span>
+      <h3>【ダメージレスまつ毛パーマ】根元からラッシュリフト</h3>
+      <div class="price">¥5,500</div>
+      <div class="condition">利用条件：どなたでも／提示：予約時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">フェイシャル</span>
+      <h3>【クレンジングコース】毛穴のザラつき、皮脂詰まりやいちご鼻もスッキリ！</h3>
+      <div class="price">¥3,900</div>
+      <div class="condition">利用条件：どなたでも・メンズや中高生にもおすすめ！</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">メンズ</span>
+      <h3>【メンズフェイシャル・顔脱毛】クレンジング&洗顔付き顔脱毛</h3>
+      <div class="price">¥5,500</div>
+      <div class="condition">利用条件：ご新規様／提示：予約時＆入店時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">メンズ</span>
+      <h3>【メンズ・ヒゲ&全顔脱毛】お顔全体で100ショットまで。30分</h3>
+      <div class="price">¥4,000</div>
+      <div class="condition">利用条件：ヒゲ脱毛したい方／提示：予約時＆入店時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">ブライダル</span>
+      <h3>《1day》前撮り前や本番前に！全方位完璧コース【眉・シェービング・脱毛付】</h3>
+      <div class="price">¥27,000</div>
+      <div class="condition">利用条件：どなたでも／提示：予約時＆入店時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+    <div class="menu-card">
+      <span class="tag">ブライダル</span>
+      <h3>《ブライダル1day》キレイなデコルテラインと艶やかな背中とうるツヤ美肌ケア</h3>
+      <div class="price">¥19,800</div>
+      <div class="condition">利用条件：ブライダルのご予定がある方／提示：予約時</div>
+      <a href="#reserve" class="btn-sm">このメニューで予約</a>
+    </div>
+  </div>
+</section>
+
+<section id="staff">
+  <h2 class="section-title">スタッフ</h2>
+  <div class="staff-card">
+    <div class="staff-icon">👩</div>
+    <div>
+      <h3>大杉 真弓</h3>
+      <div class="role">オーナー ／ ビューティアドバイザー・メイクアップアーティスト</div>
+      <p>有名化粧品会社勤務後、東京でメイクアップアーティストとして活動し独立。当時は珍しかった眉やメイク専門のサロンを先駆けて展開。大分に帰省後は、メイクやフェイシャルの施術やレッスンを通じて、お客様の美をサポートしています。通算何万人ものお顔のお手入れをしてきた経験豊富なオーナーが、丁寧に施術いたします。</p>
+    </div>
+  </div>
+</section>
+
+<section id="access">
+  <h2 class="section-title">アクセス・地図</h2>
+  <table class="info-table">
+    <tr><th>住所</th><td>〒870-0815 大分県大分市下郡北３－２６－２１</td></tr>
+    <tr><th>最寄り</th><td>米良バイパス沿い（スターバックス・肉肉うどんの並び）</td></tr>
+    <tr><th>道案内</th><td>大分市街地から21号線を下郡方面へ。「加納西交差点」で米良バイパス方面に右折し、約500m直進。なしかラーメンのすぐそば。</td></tr>
+    <tr><th>駐車場</th><td>店前に2台あり（無料）</td></tr>
+  </table>
+  <div style="margin-top:18px; border-radius:12px; overflow:hidden;">
+    <iframe src="https://maps.google.com/maps?q=大分県大分市下郡北3-26-21&output=embed" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+  </div>
+</section>
+
+<section id="review">
+  <h2 class="section-title">お客様の口コミ</h2>
+  <div class="review-card">
+    <div class="reviewer">ちーさん（女性 / 40代 / 会社員）<span class="date" style="margin-left:10px;">2026/2/13</span></div>
+    <div class="rating" style="font-size:1em; margin-bottom:8px;">★★★★★</div>
+    <p>一回で変化がすごくよく分かりました！教えてもらった手入れの仕方は、家でも続けられます。もっと早く出会いたかったと思いましたが、これからでも頑張れば肌も綺麗になれると知ったので、定期的にまた利用したいと思います。</p>
+    <p style="margin-top:10px; font-size:0.85em; color:#c06a8a;">利用メニュー：【エイジングケア】ヒト幹細胞＆エクソソーム原液導入&高周波&パック</p>
+  </div>
+  <p style="color:#888; font-size:0.88em; margin-top:6px;">口コミ平均：★★★★★ 5.00（39件）</p>
+</section>
+
+<section id="reserve">
+  <h2 class="section-title">ご予約フォーム</h2>
+  <div class="form-section">
+    <p style="color:#888; margin-bottom:24px; font-size:0.92em; line-height:1.7;">下記フォームにご記入の上、送信してください。<br>折り返しご確認のご連絡をいたします。<br>お急ぎの場合はお電話【070-5815-1166】またはLINE公式【@797dronl】までどうぞ。</p>
+    <form id="reserveForm" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">お名前 <span style="color:#c06a8a;">*</span></label>
+          <input type="text" id="name" placeholder="山田 花子" required>
+        </div>
+        <div class="form-group">
+          <label for="kana">フリガナ <span style="color:#c06a8a;">*</span></label>
+          <input type="text" id="kana" placeholder="ヤマダ ハナコ" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phone">電話番号 <span style="color:#c06a8a;">*</span></label>
+          <input type="tel" id="phone" placeholder="090-0000-0000" required>
+        </div>
+        <div class="form-group">
+          <label for="email">メールアドレス</label>
+          <input type="email" id="email" placeholder="example@email.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="date">ご希望日 <span style="color:#c06a8a;">*</span></label>
+          <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+          <label for="time">ご希望時間 <span style="color:#c06a8a;">*</span></label>
+          <select id="time" required>
+            <option value="">選択してください</option>
+            <option>11:00</option><option>11:30</option>
+            <option>12:00</option><option>12:30</option>
+            <option>13:00</option><option>13:30</option>
+            <option>14:00</option><option>14:30</option>
+            <option>15:00</option><option>15:30</option>
+            <option>16:00</option><option>16:30</option>
+            <option>17:00</option><option>17:30</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="menu">ご希望メニュー <span style="color:#c06a8a;">*</span></label>
+        <select id="menu" required>
+          <option value="">選択してください</option>
+          <option>《ララピール》韓国肌管理 ¥8,900</option>
+          <option>毛穴ケア【クリアコース】 ¥6,990</option>
+          <option>【最新肌質改善】マイクロニードル深層導入 ¥9,900</option>
+          <option>【眉カット付】毛穴ケアコース ¥8,900</option>
+          <option>【眉カット付】リフトアップ小顔コース ¥10,900</option>
+          <option>【顔脱毛】トーンアップ&ツヤアップ ¥6,300</option>
+          <option>【眉カット付】お顔のシェービング&クレンジングマッサージ ¥5,500</option>
+          <option>【ダメージレスまつ毛パーマ】ラッシュリフト ¥5,500</option>
+          <option>【クレンジングコース】 ¥3,900</option>
+          <option>【メンズフェイシャル・顔脱毛】 ¥5,500</option>
+          <option>【メンズ・ヒゲ&全顔脱毛】 ¥4,000</option>
+          <option>【メンズ・ヒゲ脱毛】60ショット ¥3,000</option>
+          <option>《ブライダル1day》全方位完璧コース ¥27,000</option>
+          <option>《ブライダル1day》デコルテ&背中ケア ¥19,800</option>
+          <option>《ブライダル相談》 無料</option>
+          <option>その他・ご相談</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="visit">ご来店歴</label>
+        <select id="visit">
+          <option value="">選択してください</option>
+          <option>初めてのご来店</option>
+          <option>2回目以降のご来店</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="note">ご要望・メッセージ</label>
+        <textarea id="note" placeholder="ご要望やご質問などご自由にどうぞ"></textarea>
+      </div>
+      <button type="submit" class="submit-btn">予約を申し込む</button>
+      <div class="success-msg" id="successMsg">
+        ✅ ご予約リクエストを受け付けました！<br>確認のご連絡を差し上げますので、しばらくお待ちください。
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <strong style="font-size:1.1em;">make-up &amp; facial salon ma-cherie（マ・シェリ）</strong><br>
+  〒870-0815 大分県大分市下郡北３－２６－２１<br>
+  TEL: 070-5815-1166 ／ 営業時間: 11:00〜18:00<br>
+  定休日: 火曜・日曜・祝日・不定休<br>
+  Instagram: <a href="#">macherie2013</a> ／ LINE: <a href="#">@797dronl</a><br><br>
+  <small>&copy; ma-cherie All Rights Reserved.</small>
+</footer>
+
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  document.getElementById('successMsg').style.display = 'block';
+  e.target.reset();
+  window.scrollTo({top: document.getElementById('successMsg').getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth'});
+}
+</script>
+</body>
+</html>
