@@ -237,35 +237,39 @@
   <h2 class="section-title">ご予約フォーム</h2>
   <div class="form-section">
     <p style="color:#888; margin-bottom:24px; font-size:0.92em; line-height:1.7;">下記フォームにご記入の上、送信してください。<br>折り返しご確認のご連絡をいたします。<br>お急ぎの場合はお電話【070-5815-1166】またはLINE公式【@797dronl】までどうぞ。</p>
-    <form id="reserveForm" onsubmit="handleSubmit(event)">
+    <div id="calendarContainer"></div>
+
+    <div id="savedInfoBanner" class="saved-banner"><span>📋 前回のお客様情報が保存されています</span><button type="button" onclick="clearSavedInfo()">クリア</button></div>
+
+    <form id="reserveForm" onsubmit="handleSubmit(event); saveCustomerInfo();">
       <div class="form-row">
         <div class="form-group">
           <label for="name">お名前 <span style="color:#c06a8a;">*</span></label>
-          <input type="text" id="name" placeholder="山田 花子" required>
+          <input type="text" id="cName" name="name" placeholder="山田 花子" required>
         </div>
         <div class="form-group">
           <label for="kana">フリガナ <span style="color:#c06a8a;">*</span></label>
-          <input type="text" id="kana" placeholder="ヤマダ ハナコ" required>
+          <input type="text" id="cKana" name="kana" placeholder="ヤマダ ハナコ" required>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label for="phone">電話番号 <span style="color:#c06a8a;">*</span></label>
-          <input type="tel" id="phone" placeholder="090-0000-0000" required>
+          <input type="tel" id="cTel" name="phone" placeholder="090-0000-0000" required>
         </div>
         <div class="form-group">
           <label for="email">メールアドレス</label>
-          <input type="email" id="email" placeholder="example@email.com">
+          <input type="email" id="cEmail" name="email" placeholder="example@email.com">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label for="date">ご希望日 <span style="color:#c06a8a;">*</span></label>
-          <input type="date" id="date" required>
+          <input type="date" id="reserveDate" name="date" required>
         </div>
         <div class="form-group">
           <label for="time">ご希望時間 <span style="color:#c06a8a;">*</span></label>
-          <select id="time" required>
+          <select id="reserveTime" name="time" required>
             <option value="">選択してください</option>
             <option>11:00</option><option>11:30</option>
             <option>12:00</option><option>12:30</option>
@@ -301,7 +305,7 @@
       </div>
       <div class="form-group">
         <label for="visit">ご来店歴</label>
-        <select id="visit">
+        <select id="cVisit" name="visit">
           <option value="">選択してください</option>
           <option>初めてのご来店</option>
           <option>2回目以降のご来店</option>
@@ -335,6 +339,210 @@ function handleSubmit(e) {
   e.target.reset();
   window.scrollTo({top: document.getElementById('successMsg').getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth'});
 }
+
+ // ===== カレンダー空き状況 =====
+ const TIMES = ['11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30'];
+ const CLOSED_DAYS = [2, 0]; // 火=2, 日=0
+
+ function getMonday(d) {
+    const dt = new Date(d);
+    const day = dt.getDay();
+    const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
+    dt.setDate(diff);
+    dt.setHours(0,0,0,0);
+    return dt;
+ }
+
+ function getAvailability(dateStr, time) {
+    const key = 'avail_' + dateStr + '_' + time;
+    const stored = localStorage.getItem(key);
+    if (stored !== null) return stored;
+    const d = new Date(dateStr);
+    const dow = d.getDay();
+    if (CLOSED_DAYS.includes(dow)) return 'closed';
+    // Default: open (in real use, owner sets this)
+    return 'open';
+ }
+
+ function setAvailability(dateStr, time, status) {
+    localStorage.setItem('avail_' + dateStr + '_' + time, status);
+ }
+
+ function formatDate(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const dy = String(d.getDate()).padStart(2,'0');
+    return y + '-' + m + '-' + dy;
+ }
+
+ function buildCalendar(weekStart) {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+         const d = new Date(weekStart);
+         d.setDate(weekStart.getDate() + i);
+         days.push(d);
+    }
+
+    const DOW_JA = ['日','月','火','水','木','金','土'];
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    let html = '<div class="cal-wrapper">';
+    // Header
+    html += '<div class="cal-nav">';
+    html += '<button class="cal-prev" onclick="moveWeek(-1)">◀ 前の週</button>';
+    html += '<span class="cal-month">' + (weekStart.getFullYear()) + '年' + (weekStart.getMonth()+1) + '月</span>';
+    html += '<button class="cal-next" onclick="moveWeek(1)">次の週 ▶</button>';
+    html += '</div>';
+
+    html += '<div class="cal-scroll"><table class="cal-table">';
+    // Day headers
+    html += '<thead><tr><th class="time-col">時間</th>';
+    days.forEach(d => {
+         const dow = d.getDay();
+         const isClosed = CLOSED_DAYS.includes(dow);
+         const isToday = d.getTime() === today.getTime();
+         const isSat = dow === 6, isSun = dow === 0;
+         let cls = 'day-head';
+         if (isClosed) cls += ' closed-day';
+         if (isToday) cls += ' today';
+         if (isSat) cls += ' sat';
+         if (isSun) cls += ' sun';
+         html += '<th class="' + cls + '">' + d.getDate() + '<br><small>(' + DOW_JA[dow] + ')</small></th>';
+    });
+    html += '</tr></thead><tbody>';
+
+    TIMES.forEach(time => {
+         html += '<tr><td class="time-label">' + time + '</td>';
+         days.forEach(d => {
+                const dateStr = formatDate(d);
+                const dow = d.getDay();
+                const isPast = d < today;
+                const isClosed = CLOSED_DAYS.includes(dow);
+                if (isClosed) {
+                         html += '<td class="cal-cell closed">—</td>';
+                } else if (isPast) {
+                         html += '<td class="cal-cell past">×</td>';
+                } else {
+                         const avail = getAvailability(dateStr, time);
+                         const ownerMode = localStorage.getItem('ownerMode') === 'true';
+                         if (avail === 'open') {
+                                    if (ownerMode) {
+                                                 html += '<td class="cal-cell open owner-click" data-date="' + dateStr + '" data-time="' + time + '" onclick="toggleAvail(this)"><span class="avail-mark open-mark">◎</span></td>';
+                                    } else {
+                                                 html += '<td class="cal-cell open selectable" data-date="' + dateStr + '" data-time="' + time + '" onclick="selectSlot(this)"><span class="avail-mark open-mark">◎</span></td>';
+                                    }
+                         } else if (avail === 'busy') {
+                                    if (ownerMode) {
+                                                 html += '<td class="cal-cell busy owner-click" data-date="' + dateStr + '" data-time="' + time + '" onclick="toggleAvail(this)"><span class="avail-mark busy-mark">△</span></td>';
+                                    } else {
+                                                 html += '<td class="cal-cell busy"><span class="avail-mark busy-mark">△</span></td>';
+                                    }
+                         } else {
+                                    if (ownerMode) {
+                                                 html += '<td class="cal-cell full owner-click" data-date="' + dateStr + '" data-time="' + time + '" onclick="toggleAvail(this)"><span class="avail-mark full-mark">×</span></td>';
+                                    } else {
+                                                 html += '<td class="cal-cell full"><span class="avail-mark full-mark">×</span></td>';
+                                    }
+                         }
+                }
+         });
+         html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    // Legend
+    html += '<div class="cal-legend"><span class="leg open-mark">◎ 空きあり</span><span class="leg busy-mark">△ 残りわずか</span><span class="leg full-mark">× 満員</span><span class="leg">— 定休日</span></div>';
+
+    // Owner toggle
+    const isOwner = localStorage.getItem('ownerMode') === 'true';
+    html += '<div class="owner-area"><button class="owner-toggle-btn" onclick="toggleOwnerMode()">' + (isOwner ? '👩‍💼 オーナーモード終了' : '管理') + '</button></div>';
+
+    html += '</div>';
+    return html;
+ }
+
+ let currentWeekStart = getMonday(new Date());
+
+ function renderCalendar() {
+    const el = document.getElementById('calendarContainer');
+    if (el) el.innerHTML = buildCalendar(currentWeekStart);
+ }
+
+ function moveWeek(dir) {
+    currentWeekStart.setDate(currentWeekStart.getDate() + dir * 7);
+    renderCalendar();
+ }
+
+ function selectSlot(cell) {
+    // Remove previous selection
+    document.querySelectorAll('.cal-cell.selected').forEach(c => c.classList.remove('selected'));
+    cell.classList.add('selected');
+    // Fill in the form
+    const date = cell.dataset.date;
+    const time = cell.dataset.time;
+    const dateInput = document.getElementById('reserveDate');
+    const timeSelect = document.getElementById('reserveTime');
+    if (dateInput) dateInput.value = date;
+    if (timeSelect) timeSelect.value = time;
+    // Scroll to form
+    const form = document.getElementById('reserveForm');
+    if (form) form.scrollIntoView({behavior: 'smooth', block: 'start'});
+ }
+
+ function toggleAvail(cell) {
+    const date = cell.dataset.date;
+    const time = cell.dataset.time;
+    const cur = getAvailability(date, time);
+    const next = cur === 'open' ? 'busy' : cur === 'busy' ? 'full' : 'open';
+    setAvailability(date, time, next);
+    renderCalendar();
+ }
+
+ function toggleOwnerMode() {
+    const cur = localStorage.getItem('ownerMode') === 'true';
+    localStorage.setItem('ownerMode', (!cur).toString());
+    renderCalendar();
+ }
+
+ // ===== お客様情報の記憶 =====
+ function loadSavedInfo() {
+    const saved = JSON.parse(localStorage.getItem('customerInfo') || '{}');
+    if (saved.name) document.getElementById('cName').value = saved.name;
+    if (saved.kana) document.getElementById('cKana').value = saved.kana;
+    if (saved.tel) document.getElementById('cTel').value = saved.tel;
+    if (saved.email) document.getElementById('cEmail').value = saved.email;
+    if (saved.visit) document.getElementById('cVisit').value = saved.visit;
+    if (saved.name || saved.tel) {
+         document.getElementById('savedInfoBanner').style.display = 'flex';
+    }
+ }
+
+ function saveCustomerInfo() {
+    const info = {
+         name: document.getElementById('cName').value,
+         kana: document.getElementById('cKana').value,
+         tel: document.getElementById('cTel').value,
+         email: document.getElementById('cEmail').value,
+         visit: document.getElementById('cVisit').value
+    };
+    localStorage.setItem('customerInfo', JSON.stringify(info));
+ }
+
+ function clearSavedInfo() {
+    localStorage.removeItem('customerInfo');
+    document.getElementById('cName').value = '';
+    document.getElementById('cKana').value = '';
+    document.getElementById('cTel').value = '';
+    document.getElementById('cEmail').value = '';
+    document.getElementById('savedInfoBanner').style.display = 'none';
+ }
+
+ // Init on load
+ document.addEventListener('DOMContentLoaded', function() {
+    renderCalendar();
+    loadSavedInfo();
+ });
+ 
 </script>
 </body>
 </html>
